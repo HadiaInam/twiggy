@@ -11,6 +11,7 @@ import Leaderboard from './pages/Leaderboard.jsx'
 import BlackMarket from './pages/BlackMarket.jsx'
 import Friends from './pages/Friends.jsx'
 import BackStory from './pages/BackStory.jsx'
+import AddFriend from './pages/AddFriend.jsx'
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
       <Route path='/black-market' element={<BlackMarket />} />
       <Route path='/friends' element={<Friends />} />
       <Route path='/backstory' element={<BackStory />} />
+      <Route path='/add-friend' element={<AddFriend />} />
     </Routes>
     </>
   )

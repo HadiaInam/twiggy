@@ -6,6 +6,17 @@ const createToken = (id) => {
     return jwt.sign({id}, 'secret')
 }
 
+const getUserFromToken = async (token) => {
+    try {
+
+        const token_decode = jwt.verify(token, 'secret')
+        const userId = token_decode.id
+        return userId
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export const loginUser = async (req,res) => {
 
     try {
@@ -64,6 +75,67 @@ export const registerUser = async (req,res) => {
         res.json({success:true, token})
 
     } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message})
+    }
+}
+
+export const leaderboard = async (req,res) => {
+    try {
+        let topUsers = await userModel.find({})
+        topUsers.sort((a, b) => a.treeCoins - b.treeCoins).slice(0, 10);
+        res.json({success:true, topUsers})
+
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message})
+    }
+
+}
+
+export const getUsers = async (req, res) => {
+    try {
+        let users = await userModel.find({})
+        res.json({success:true, users})
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const getFriends = async (req,res) => {
+    const {token} = req.body
+    const userId = await getUserFromToken(token)
+    try{
+       let user = await userModel.findById(userId)
+       const friends = user.friends
+       res.json({success:true, friends})
+    }catch(error){
+        console.log(error)
+        res.json({success:false, message:error.message})
+    }
+}
+
+export const addFriend = async (req,res) => {
+    const {token, friend} = req.body
+    const userId = await getUserFromToken(token)
+    try{
+       let user = await userModel.findById(userId)
+       const userFriends = user.friends
+       let friends = [...userFriends, friend]
+       await userModel.findByIdAndUpdate(userId ,{friends})
+       let id = friend._id
+       if(userId !== id){
+        friends = [...userFriends, user]
+        
+       await userModel.findByIdAndUpdate(id ,{friends})
+       }
+
+       
+
+
+       res.json({success:true})
+    }catch(error){
         console.log(error)
         res.json({success:false, message:error.message})
     }
